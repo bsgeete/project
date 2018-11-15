@@ -1,9 +1,7 @@
 package com.sjsu.student.cmpe277.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,8 +14,9 @@ import android.view.MenuItem;
 import com.astuetz.PagerSlidingTabStrip;
 import com.sjsu.student.cmpe277.R;
 import com.sjsu.student.cmpe277.fragments.FileViewerFragment;
-import com.sjsu.student.cmpe277.fragments.LicensesFragment;
 import com.sjsu.student.cmpe277.fragments.RecordFragment;
+
+//import com.sjsu.student.cmpe277.fragments.LicensesFragment;
 
 
 public class MainActivity extends ActionBarActivity{

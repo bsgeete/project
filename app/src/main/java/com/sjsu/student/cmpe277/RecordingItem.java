@@ -11,6 +11,10 @@ public class RecordingItem implements Parcelable {
     private int mLength; // length of recording in seconds
     private long mTime; // date/time of the recording
 
+    private String mLocation; //file path
+    private Double mLatitude; //file path
+    private Double mLongitude; //file path
+
     public RecordingItem()
     {
     }
@@ -21,6 +25,9 @@ public class RecordingItem implements Parcelable {
         mId = in.readInt();
         mLength = in.readInt();
         mTime = in.readLong();
+        mLocation = "San Jose";
+        mLatitude = 37.3382;
+        mLongitude =-121.8863;
     }
 
     public String getFilePath() {
@@ -61,6 +68,30 @@ public class RecordingItem implements Parcelable {
 
     public void setTime(long time) {
         mTime = time;
+    }
+
+    public String getmLocation() {
+        return mLocation;
+    }
+
+    public void setmLocation(String mLocation) {
+        this.mLocation = mLocation;
+    }
+
+    public Double getmLatitude() {
+        return mLatitude;
+    }
+
+    public void setmLatitude(Double mLatitude) {
+        this.mLatitude = mLatitude;
+    }
+
+    public Double getmLongitude() {
+        return mLongitude;
+    }
+
+    public void setmLongitude(Double mLongitude) {
+        this.mLongitude = mLongitude;
     }
 
     public static final Parcelable.Creator<RecordingItem> CREATOR = new Parcelable.Creator<RecordingItem>() {

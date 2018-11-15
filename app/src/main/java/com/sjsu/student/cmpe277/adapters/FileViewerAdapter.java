@@ -10,25 +10,26 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.format.DateUtils;
 
 import com.sjsu.student.cmpe277.DBHelper;
 import com.sjsu.student.cmpe277.R;
 import com.sjsu.student.cmpe277.RecordingItem;
+import com.sjsu.student.cmpe277.fragments.MapSearchFragment;
 import com.sjsu.student.cmpe277.fragments.PlaybackFragment;
 import com.sjsu.student.cmpe277.listeners.OnDatabaseChangedListener;
 
 import java.io.File;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
     implements OnDatabaseChangedListener{
@@ -73,6 +74,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 try {
                     PlaybackFragment playbackFragment =
                             new PlaybackFragment().newInstance(getItem(holder.getPosition()));
@@ -89,6 +91,31 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             }
         });
 
+        holder.btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+                    Log.i(LOG_TAG, "getItem(holder.getPosition()).getName():"+getItem(holder.getPosition()).getName());
+                    MapSearchFragment playbackFragment =
+                            new MapSearchFragment().newInstance(getItem(holder.getPosition()).getmLatitude(),
+                                    getItem(holder.getPosition()).getmLongitude(), getItem(holder.getPosition()).getName());
+
+                    FragmentTransaction transaction = ((FragmentActivity) mContext)
+                            .getSupportFragmentManager()
+                            .beginTransaction();
+
+                    playbackFragment.show(transaction, "dialog_playback");
+
+
+
+
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "exception", e);
+                }
+            }
+        });
+
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -97,6 +124,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 entrys.add(mContext.getString(R.string.dialog_file_share));
                 entrys.add(mContext.getString(R.string.dialog_file_rename));
                 entrys.add(mContext.getString(R.string.dialog_file_delete));
+                entrys.add(mContext.getString(R.string.dialog_file_upload));
 
                 final CharSequence[] items = entrys.toArray(new CharSequence[entrys.size()]);
 
@@ -112,6 +140,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                             renameFileDialog(holder.getPosition());
                         } else if (item == 2) {
                             deleteFileDialog(holder.getPosition());
+                        }else if (item == 3) {
+                            Log.i("calling Posting file","Posting file");
+                            uploadFileDialog(holder.getPosition());
                         }
                     }
                 });
@@ -149,12 +180,21 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         protected TextView vDateAdded;
         protected View cardView;
 
+        public TextView Delete;
+        public TextView Edit;
+        public TextView Share;
+        public ImageView btnLocation;
+
         public RecordingsViewHolder(View v) {
             super(v);
             vName = (TextView) v.findViewById(R.id.file_name_text);
             vLength = (TextView) v.findViewById(R.id.file_length_text);
             vDateAdded = (TextView) v.findViewById(R.id.file_date_added_text);
             cardView = v.findViewById(R.id.card_view);
+            Delete = (TextView) itemView.findViewById(R.id.Delete);
+            Edit = (TextView) itemView.findViewById(R.id.Edit);
+            Share = (TextView) itemView.findViewById(R.id.Share);
+            btnLocation = (ImageView) itemView.findViewById(R.id.locationView);
         }
     }
 
@@ -233,6 +273,41 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(getItem(position).getFilePath())));
         shareIntent.setType("audio/mp4");
         mContext.startActivity(Intent.createChooser(shareIntent, mContext.getText(R.string.send_to)));
+    }
+
+    public void uploadFileDialog(int position) {
+        Log.i("Posting file","Posting file");
+//        String url = "http://54.67.105.137:3000";
+//
+//
+//        File f = new File(getItem(position).getFilePath());
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//
+//        StrictMode.setThreadPolicy(policy);
+//
+//        Log.i("Posting file","Posting file");
+//
+//        HttpClient httpclient = new DefaultHttpClient();
+//        HttpPost httppost = new HttpPost(url);
+//        ContentBody fb = new FileBody(f, "image/jpeg");
+//        MultipartEntity entity = new MultipartEntity(
+//                HttpMultipartMode.STRICT);
+//        entity.addPart("file", fb);
+//        httppost.setEntity(entity);
+//        HttpResponse response = null;
+        try {
+            //response = httpclient.execute(httppost);
+
+            Toast.makeText(mContext,
+                    String.format("file uploaded to cloud", ""),
+                    Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //System.out.println("file "+response.toString()+""+" e stato inviato al server");
+
     }
 
     public void renameFileDialog (final int position) {
