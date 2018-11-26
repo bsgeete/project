@@ -7,6 +7,7 @@ import android.net.ParseException;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ import com.sjsu.student.cmpe277.R;
 
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 
-public class MapSearchFragment extends DialogFragment implements OnMapReadyCallback {
+public class MapFragment extends DialogFragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private UiSettings mUiSettings;
@@ -42,7 +43,8 @@ public class MapSearchFragment extends DialogFragment implements OnMapReadyCallb
     private LocationRequest locationRequest;
     public static final int REQUEST_LOCATION_CODE = 99;
     int PROXIMITY_RADIUS = 10000;
-    double latitude, longitude;
+
+    static double latitude, longitude;
 
     private LocationManager locationManager;
     private Location lastlocation;
@@ -51,30 +53,45 @@ public class MapSearchFragment extends DialogFragment implements OnMapReadyCallb
     private GoogleApiClient mGoogleApiClient;
     private Location mLocation;
     private LocationRequest mLocationRequest;
+
     private String recordingTitle;
     private String recordingName;
+    static String locationAddress;
 
-    public MapSearchFragment() {
+
+    public MapFragment() {
         // Required empty public constructor
     }
 
+    private static View view;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.fragment_map, container, false);
+        } catch (InflateException e) {
+            /* map is already there, just return view as it is */
+        }
 
-        View v = inflater.inflate(R.layout.fragment_map, container, false);
-
-        return v;
+        return view;
     }
 
-    public MapSearchFragment newInstance(Double latitude, Double longitude, String recordingTitle) {
-        MapSearchFragment f = new MapSearchFragment();
-        if(latitude!=null && longitude !=null) {
+    public MapFragment newInstance(Double latitude, Double longitude, String recordingTitle, String locationAddress) {
+        MapFragment f = new MapFragment();
+        if (latitude != null && longitude != null) {
             f.latitude = latitude;
             f.longitude = longitude;
-        }else{
+            f.locationAddress = locationAddress;
+        } else {
+            //Use default
             latitude = 37.3382;
             longitude = -121.8863;
+            locationAddress = "San Jose";
         }
         f.recordingTitle = recordingTitle;
         f.recordingName = recordingTitle;
@@ -93,10 +110,6 @@ public class MapSearchFragment extends DialogFragment implements OnMapReadyCallb
         final SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.map1);
         mapFragment.getMapAsync(this);
-        /*
-         * Set up auto complete fragment for search.
-         */
-
 
     }
 
@@ -104,30 +117,20 @@ public class MapSearchFragment extends DialogFragment implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        /*
-         *  Check for internet connection
-         *  */
-
         parseResults(latitude, longitude);
-
-
     }
 
     public void parseResults(double latitude, double longitude) {
-
         //Empty map for new data points.
         mMap.clear();
 
-
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
 
         LatLng latLng = new LatLng(latitude, longitude);
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
-                .title("Recording location for "+recordingName)
-                .snippet(recordingTitle);
+                .title("Recording location for " + recordingName)
+                .snippet(locationAddress);
 
         Marker m = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -138,7 +141,6 @@ public class MapSearchFragment extends DialogFragment implements OnMapReadyCallb
         try {
             LatLngBounds latLngBounds = builder.build();
             int padding = 10;
-
 
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(latLngBounds, padding);
             mMap.animateCamera(cu);
@@ -152,6 +154,4 @@ public class MapSearchFragment extends DialogFragment implements OnMapReadyCallb
         mUiSettings.setCompassEnabled(true);
         mUiSettings.setMapToolbarEnabled(true);
     }
-
-
 }

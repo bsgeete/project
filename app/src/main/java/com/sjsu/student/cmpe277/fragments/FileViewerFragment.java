@@ -15,9 +15,13 @@ import com.sjsu.student.cmpe277.R;
 import com.sjsu.student.cmpe277.adapters.FileViewerAdapter;
 
 
+/**
+ * File view fragment
+ */
 public class FileViewerFragment extends Fragment{
     private static final String ARG_POSITION = "position";
     private static final String LOG_TAG = "FileViewerFragment";
+    public static final String SOUND_RECORDER = "/SoundRecorder";
 
     private int position;
     private FileViewerAdapter mFileViewerAdapter;
@@ -62,7 +66,7 @@ public class FileViewerFragment extends Fragment{
 
     FileObserver observer =
             new FileObserver(android.os.Environment.getExternalStorageDirectory().toString()
-                    + "/SoundRecorder") {
+                    + SOUND_RECORDER) {
                 // set up a file observer to watch this directory on sd card
                 @Override
                 public void onEvent(int event, String file) {
@@ -70,11 +74,11 @@ public class FileViewerFragment extends Fragment{
                         // user deletes a recording file out of the app
 
                         String filePath = android.os.Environment.getExternalStorageDirectory().toString()
-                                + "/SoundRecorder" + file + "]";
+                                + SOUND_RECORDER + file + "]";
 
                         Log.d(LOG_TAG, "File deleted ["
                                 + android.os.Environment.getExternalStorageDirectory().toString()
-                                + "/SoundRecorder" + file + "]");
+                                + SOUND_RECORDER + file + "]");
 
                         // remove file from database and recyclerview
                         mFileViewerAdapter.removeOutOfApp(filePath);
@@ -82,7 +86,4 @@ public class FileViewerFragment extends Fragment{
                 }
             };
 }
-
-
-
 

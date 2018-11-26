@@ -5,13 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
 import android.provider.BaseColumns;
+import android.util.Log;
 
+import com.sjsu.student.cmpe277.activities.MainActivity;
 import com.sjsu.student.cmpe277.listeners.OnDatabaseChangedListener;
 
+import java.io.IOException;
 import java.util.Comparator;
+import java.util.List;
 
 
+/***
+ * SQLite wrapper for database CRUD activities
+ */
 public class DBHelper extends SQLiteOpenHelper {
     private Context mContext;
 
@@ -22,9 +30,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "saved_recordings.db";
     private static final int DATABASE_VERSION = 1;
 
+    //Columns
     public static abstract class DBHelperItem implements BaseColumns {
         public static final String TABLE_NAME = "saved_recordings";
-
         public static final String COLUMN_NAME_RECORDING_NAME = "recording_name";
         public static final String COLUMN_NAME_RECORDING_FILE_PATH = "file_path";
         public static final String COLUMN_NAME_RECORDING_LENGTH = "length";
@@ -32,12 +40,11 @@ public class DBHelper extends SQLiteOpenHelper {
         public static final String COLUMN_NAME_LATITUDE = "latitude";
         public static final String COLUMN_NAME_LONGITUDE = "longitude";
         public static final String COLUMN_NAME_LOCATION = "location";
-
-
     }
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
+
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DBHelperItem.TABLE_NAME + " (" +
                     DBHelperItem._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
@@ -49,9 +56,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     DBHelperItem.COLUMN_NAME_LOCATION + TEXT_TYPE + COMMA_SEP +
                     DBHelperItem.COLUMN_NAME_TIME_ADDED + " INTEGER " + ")";
 
-
-
-    @SuppressWarnings("unused")
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + DBHelperItem.TABLE_NAME;
 
     @Override
@@ -130,12 +134,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public long addRecording(String recordingName, String filePath, long length ) {
 
-        Double  latitude = 37.3382;
-        Double longitude = -121.8863;
+        Double latitude = MainActivity.location.getLatitude();
+        Double longitude = MainActivity.location.getLongitude();
+
+
         String location = "San Jose";
+        try {
+            List<Address> addresses = MainActivity.geocoder.getFromLocation(latitude, longitude, 1);
+            location =  addresses.get(0).getLocality();
+        }catch (IOException e){
 
-
-
+        }
+        Log.i(LOG_TAG, " Location :"+location);
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(DBHelperItem.COLUMN_NAME_RECORDING_NAME, recordingName);

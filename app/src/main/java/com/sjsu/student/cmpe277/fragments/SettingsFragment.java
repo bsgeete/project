@@ -6,11 +6,10 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 
+import com.sjsu.student.cmpe277.AboutDialogFragment;
 import com.sjsu.student.cmpe277.BuildConfig;
 import com.sjsu.student.cmpe277.MySharedPreferences;
 import com.sjsu.student.cmpe277.R;
-import com.sjsu.student.cmpe277.activities.SettingsActivity;
-
 
 
 public class SettingsFragment extends PreferenceFragment {
@@ -31,13 +30,13 @@ public class SettingsFragment extends PreferenceFragment {
 
         Preference aboutPref = findPreference(getString(R.string.pref_about_key));
         aboutPref.setSummary(getString(R.string.pref_about_desc, BuildConfig.VERSION_NAME));
-//        aboutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//            @Override
-//            public boolean onPreferenceClick(Preference preference) {
-//                LicensesFragment licensesFragment = new LicensesFragment();
-//                licensesFragment.show(((SettingsActivity)getActivity()).getSupportFragmentManager().beginTransaction(), "dialog_licenses");
-//                return true;
-//            }
-//        });
+        aboutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                AboutDialogFragment aboutDialogFragment = new AboutDialogFragment();
+                aboutDialogFragment.show(getFragmentManager().beginTransaction(),"");
+                return true;
+            }
+        });
     }
 }

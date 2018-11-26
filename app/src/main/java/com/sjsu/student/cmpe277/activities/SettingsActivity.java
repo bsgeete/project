@@ -1,11 +1,7 @@
 package com.sjsu.student.cmpe277.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
@@ -13,7 +9,9 @@ import com.sjsu.student.cmpe277.R;
 import com.sjsu.student.cmpe277.fragments.SettingsFragment;
 
 
-
+/**
+ * Setting Activity
+ */
 public class SettingsActivity extends android.support.v7.app.ActionBarActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

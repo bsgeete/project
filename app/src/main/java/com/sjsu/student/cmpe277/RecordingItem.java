@@ -4,6 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 
+/**
+ * Recording object
+ */
 public class RecordingItem implements Parcelable {
     private String mName; // file name
     private String mFilePath; //file path

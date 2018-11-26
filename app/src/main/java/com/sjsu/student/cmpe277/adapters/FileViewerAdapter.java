@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.sjsu.student.cmpe277.DBHelper;
 import com.sjsu.student.cmpe277.R;
 import com.sjsu.student.cmpe277.RecordingItem;
-import com.sjsu.student.cmpe277.fragments.MapSearchFragment;
+import com.sjsu.student.cmpe277.fragments.MapFragment;
 import com.sjsu.student.cmpe277.fragments.PlaybackFragment;
 import com.sjsu.student.cmpe277.listeners.OnDatabaseChangedListener;
 
@@ -31,11 +31,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * File view with recyclerview
+ */
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
     implements OnDatabaseChangedListener{
 
     private static final String LOG_TAG = "FileViewerAdapter";
-
     private DBHelper mDatabase;
 
     RecordingItem item;
@@ -97,18 +99,15 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
                 try {
                     Log.i(LOG_TAG, "getItem(holder.getPosition()).getName():"+getItem(holder.getPosition()).getName());
-                    MapSearchFragment playbackFragment =
-                            new MapSearchFragment().newInstance(getItem(holder.getPosition()).getmLatitude(),
-                                    getItem(holder.getPosition()).getmLongitude(), getItem(holder.getPosition()).getName());
+                    MapFragment playbackFragment =
+                            new MapFragment().newInstance(getItem(holder.getPosition()).getmLatitude(),
+                                    getItem(holder.getPosition()).getmLongitude(), getItem(holder.getPosition()).getName(), getItem(holder.getPosition()).getmLocation());
 
                     FragmentTransaction transaction = ((FragmentActivity) mContext)
                             .getSupportFragmentManager()
                             .beginTransaction();
 
                     playbackFragment.show(transaction, "dialog_playback");
-
-
-
 
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "exception", e);
@@ -215,7 +214,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     }
 
     @Override
-    //TODO
     public void onDatabaseEntryRenamed() {
 
     }
@@ -240,7 +238,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         notifyItemRemoved(position);
     }
 
-    //TODO
     public void removeOutOfApp(String filePath) {
         //user deletes a saved recording out of the application through another application
     }

@@ -1,6 +1,8 @@
 package com.sjsu.student.cmpe277.activities;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,18 +15,25 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.sjsu.student.cmpe277.R;
+import com.sjsu.student.cmpe277.ThemeUtils;
 import com.sjsu.student.cmpe277.fragments.FileViewerFragment;
 import com.sjsu.student.cmpe277.fragments.RecordFragment;
 
-//import com.sjsu.student.cmpe277.fragments.LicensesFragment;
+import java.util.Locale;
 
+import im.delight.android.location.SimpleLocation;
 
-public class MainActivity extends ActionBarActivity{
+/**
+ * Main activity - application main
+ */
+public class MainActivity extends ActionBarActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
+    public static SimpleLocation location;
+    public static Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,18 @@ public class MainActivity extends ActionBarActivity{
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
+        location = new SimpleLocation(this);
+
+        // if we can't access the location yet
+        if (!location.hasLocationEnabled()) {
+            // ask the user to enable location access
+            SimpleLocation.openSettings(this);
+        }
+
+        geocoder = new Geocoder(this, Locale.getDefault());
+        ThemeUtils.onActivityCreateSetTheme(this);
+
     }
 
     @Override
@@ -52,10 +73,7 @@ public class MainActivity extends ActionBarActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        // Handle presses on the action bar items
+        // Handle action bar item
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent i = new Intent(this, SettingsActivity.class);
@@ -67,8 +85,8 @@ public class MainActivity extends ActionBarActivity{
     }
 
     public class MyAdapter extends FragmentPagerAdapter {
-        private String[] titles = { getString(R.string.tab_title_record),
-                getString(R.string.tab_title_saved_recordings) };
+        private String[] titles = {getString(R.string.tab_title_record),
+                getString(R.string.tab_title_saved_recordings)};
 
         public MyAdapter(FragmentManager fm) {
             super(fm);
@@ -76,11 +94,11 @@ public class MainActivity extends ActionBarActivity{
 
         @Override
         public Fragment getItem(int position) {
-            switch(position){
-                case 0:{
+            switch (position) {
+                case 0: {
                     return RecordFragment.newInstance(position);
                 }
-                case 1:{
+                case 1: {
                     return FileViewerFragment.newInstance(position);
                 }
             }
@@ -99,5 +117,40 @@ public class MainActivity extends ActionBarActivity{
     }
 
     public MainActivity() {
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // make the device update its location
+        location.beginUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        // stop location updates (saves battery)
+        location.endUpdates();
+        super.onPause();
+    }
+
+    private static int cTheme = 1;
+    public final static int BLACK = 0;
+    public final static int BLUE = 1;
+
+    public static void onActivityCreateSetTheme(Activity activity) {
+        switch (cTheme) {
+
+            default:
+                activity.setTheme(R.style.AppTheme);
+
+            case BLACK:
+                activity.setTheme(R.style.AppTheme);
+                break;
+
+            case BLUE:
+                activity.setTheme(R.style.AppTheme);
+                break;
+        }
     }
 }
